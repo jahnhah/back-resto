@@ -1,8 +1,9 @@
 const express=require('express')
 const mongoose=require('mongoose')
+const dotenv=require('dotenv')
 
-const url="mongodb+srv://jahnhahcraven:1234@resto.gtht4.mongodb.net/Resto?retryWrites=true&w=majority"
-
+dotenv.config()
+const url=process.env.DB_URL
 const app=express()
 app.use(express.json())
 
@@ -14,8 +15,9 @@ connection.on('open',()=>{
 })
 
 const menuRouter=require('./routes/menu')
-
+const utilisateurRouteur=require('./routes/utilisateur')
 app.use('/menu',menuRouter)
+app.use('/utilisateur',utilisateurRouteur)
 
 app.listen(9000,()=>{
     console.log('server started...')

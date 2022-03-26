@@ -1,8 +1,9 @@
 const express=require('express')
+const auth=require('./auth')
 
 const router =express.Router();
 const Menu=require('../models/menu')
-router.get('',async (req,res)=>{
+router.get('',auth,async (req,res)=>{
     try{
         const menus=await Menu.find()
         res.json(menus)
