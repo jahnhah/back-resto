@@ -1,5 +1,5 @@
 const mongoose=require('mongoose')
-const Utilisateur = require('./Utilisateur')
+const Utilisateur = require('./utilisateur')
 
 const livraisonSchema=mongoose.Schema({
     commandes:[{

@@ -1,5 +1,5 @@
 const mongoose=require('mongoose')
-const Restaurant = require('./Restaurant')
+const Restaurant = require('./restaurant')
 
 const platSchema=mongoose.Schema({
     nom:{
@@ -12,6 +12,7 @@ const platSchema=mongoose.Schema({
     },
     restaurant:{
         type:mongoose.Schema.Types.ObjectId,
+        ref:'restaurant',
         required:true
     }
     // image

@@ -26,7 +26,6 @@ router.post('/register',async (req,res)=>{
     const utilisateur=new Utilisateur({
         nom:req.body.nom,
         email:req.body.email,
-        login:req.body.login,
         type:req.body.type,
         pwd:hashed_pwd
     })
@@ -34,13 +33,14 @@ router.post('/register',async (req,res)=>{
     try{
         const emailExist= await Utilisateur.findOne({email:req.body.email});
         // check email
-        if(emailExist) return res.status(400).send('Email already exist')
+        if(emailExist) return res.status(400).send('Email déja inscrit')
         // Validation
         const {error}=registerValidation(req.body)
         if(error) return res.status(400).send(error.details[0].message)
         // Save the user
         const u=await utilisateur.save()
-        res.json({utilisateur:u._id})       
+        const token=jwt.sign({_id:u._id},process.env.SECRET_TOKEN)
+        res.header('auth-token',token).json({'token':token})      
     }
     catch(err){
         console.log(err)
@@ -56,11 +56,11 @@ router.post('/login',async (req,res)=>{
     const {error}=loginValidation(req.body)
     if(error) return res.status(400).send(error.details[0].message)
     // check password
-    const compare_pwd=bcrypt.compare(req.body.pwd,utilisateur.pwd)
+    const compare_pwd=await bcrypt.compare(req.body.pwd,utilisateur.pwd)
     if(!compare_pwd) return res.status(400).send('Wrong password')
     // sign token
     const token=jwt.sign({_id:utilisateur._id},process.env.SECRET_TOKEN)
-    res.header('auth-token',token).send(token)
+    res.header('auth-token',token).json({'token':token})
 })
 
 module.exports=router

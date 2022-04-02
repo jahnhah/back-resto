@@ -1,6 +1,6 @@
 const { Timestamp } = require("mongodb")
 const mongoose=require('mongoose')
-const Utilisateur = require("./Utilisateur")
+const Utilisateur = require("./utilisateur")
 
 let etat_enum = ["nouveau", "en cours","fini"];
 
@@ -18,7 +18,7 @@ const commandeSchema=mongoose.Schema({
     }],
     dateCommande:{
         type:Date,
-        default:Date.now,
+        default:Date.now(),
         required:true
     },
     dateLivraison:{
