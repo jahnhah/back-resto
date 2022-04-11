@@ -37,7 +37,8 @@ app.use('/plat', platRouter)
 app.use('/commande', commandeRouter)
 app.use('/livraison', livraisonRouter)
 
+const PORT = process.env.PORT || 5001;
 
-app.listen(9000, () => {
+app.listen(PORT, () => {
     console.log('server started...')
 });
