@@ -1,36 +1,46 @@
+const { number, string } = require("joi");
 const { Timestamp } = require("mongodb")
-const mongoose=require('mongoose')
+const mongoose = require('mongoose')
 const Utilisateur = require("./utilisateur")
+const Plat = require("./plat")
+// client -> resto -> livreur -> fini
+let etat_enum = ["nouveau", "pret", "encours", "fini"];
 
-let etat_enum = ["nouveau", "en cours","fini"];
 
-
-const commandeSchema=mongoose.Schema({
-    utilisateur:{
+const commandeSchema = mongoose.Schema({
+    utilisateur: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'utilisateur',
-        required:true
+        ref: 'Utilisateur',
+        required: true
     },
-    plats:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Plat',
-        required:true
+    plats: [{
+        plat: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Plat',
+            required: true
+        }, nb: {
+            type: Number,
+            default: 1,
+            required: true
+        }
     }],
-    dateCommande:{
-        type:Date,
-        default:Date.now(),
-        required:true
+    dateCommande: {
+        type: Date,
+        default: Date.now(),
+        required: true
     },
-    dateLivraison:{
-        type:Date,
-        required:true
+    dateLivraison: {
+        type: Date,
+        required: true
     },
-    etat:{
-        type:String,
-        enum:etat_enum,
-        required:true,
-        default:'nouveau'
+    etat: {
+        type: String,
+        enum: etat_enum,
+        required: true,
+        default: 'nouveau'
     }
 })
 
-module.exports=mongoose.model('Commande',commandeSchema)
+
+
+module.exports = mongoose.model('Commande', commandeSchema)
