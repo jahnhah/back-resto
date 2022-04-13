@@ -26,7 +26,7 @@ router.get('/getByUtilisateur', auth, async (req, res) => {
     }
 })
 
-router.get('/search/:nom', auth, async (req, res) => {
+router.get('/search/:nom', async (req, res) => {
     try {
         const nom = req.params.nom
         const restaurants = await Restaurant.find({ nom: { $regex: '.*' + nom + '.*' } })

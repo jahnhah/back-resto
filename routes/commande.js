@@ -47,7 +47,6 @@ router.get('/', auth, async (req, res) => {
 
 router.post('/', auth, async (req, res) => {
     let commandes = req.body.plats
-    let commandesR = [];
     let commandeSplit = [];
     for (c of commandes) {
         let r = (await Plat.findOne({ _id: c.plat })).restaurant
