@@ -103,14 +103,44 @@ router.put('/bulk', auth, async (req, res) => {
     }
 })
 
-router.get('/agregate', async (req, res) => {
+router.get('/agregate', auth, async (req, res) => {
     try {
+        let utilisateur = await Utilisateur.findOne({ _id: req.utilisateur });
+        if (utilisateur.type != 'admin' && utilisateur.type != 'restaurant') {
+            return res.status(501).send('forbidden')
+        }
+
+        let resto_id = req.query.restaurant;
+        if (utilisateur.type == 'restaurant') {
+            resto_id = (await Restaurant.findOne({ responsable: utilisateur._id }))._id
+        }
         let query = Commande.find()
-        query.populate({ path: 'plats.plat', match: { 'nom': 'Mine-sao' } })
-        query.populate({ path: 'plats.plat.restaurant' })
-        query.populate({ path: 'plats.plat', model: 'Plat', populate: { path: 'restaurant', model: 'Restaurant' } })
+        query.populate({ path: 'plats.plat', model: 'Plat' })
+        const plats = await Plat.find({ restaurant: resto_id });
+        query.where('plats.plat', { $in: plats })
         let commandes = await query.exec()
-        res.status(200).json(commandes)
+        let cs = []
+        commandes.map(c => {
+            let somme = 0;
+            c.plats.forEach(plts => {
+                somme += plts.nb * plts.plat.prix
+            });
+            cs.push({ _id: c._id, dateCommande: c.dateCommande, somme: somme });
+        });
+
+        let val = []
+        cs.forEach(commande => {
+            let date = commande.dateCommande.toLocaleString().slice(0, 10)
+            let index = val.indexOf(val.find(x => x.date == date))
+            console.log('index', index)
+            if (index >= 0) {
+                val[index].somme += commande.somme
+            }
+            else {
+                val.push({ date: date, somme: commande.somme })
+            }
+        })
+        res.status(200).json(val)
     }
     catch (err) {
         console.log(err)
